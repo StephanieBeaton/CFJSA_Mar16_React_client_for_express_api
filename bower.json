@@ -1,0 +1,20 @@
+{
+  "name": "CFJSA_Mar16_React_client_for_express_api",
+  "version": "0.1.0",
+  "authors": [
+    "StephanieBeaton <stefanybeaton@gmail.com>"
+  ],
+  "description": "create a React client for existing express server",
+  "main": "client.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "react": "~0.13.0"
+  }
+}
