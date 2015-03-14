@@ -1,5 +1,6 @@
 
 var React = require('react');
+var ajax  = require('jquery').ajax;
 
 var platypusData1 = [{platypusName: 'hello world', _id: 1}, {platypusName: 'goodbye world', _id: 2}];
 
@@ -33,17 +34,23 @@ var PlatypusForm = React.createClass({
   handleChange: function(event){
     this.setState({newPlatypus: {platypusName: event.target.value}});
   },
-  handleSubmit: function() {
-
-  },
-
   handleSubmit: function(event) {
     event.preventDefault();
     console.log(this.state.newPlatypus);
     var newPlatypus = this.state.newPlatypus;
-
-    this.props.onNewPlatypusSubmit(newPlatypus);
-    this.setState({newPlatypus: {platypusName: ''}});
+    ajax({
+      url: this.props.url,
+      contentType: 'application/json',
+      type: 'POST',
+      data: JSON.stringify(newPlatypus),
+      success: function(data) {
+        this.props.onNewPlatypusSubmit(data);
+        this.setState({newPlatypus: {noteName: ''}});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.log(err);
+      }
+    });
   },
   render: function() {
     return (
@@ -68,14 +75,28 @@ var PlatypusApp = React.createClass({
     stateCopy.platypusData.push(platypus);
     this.setState(stateCopy);
   },
+  componentDidMount: function() {
+    ajax({
+      url: this.props.platypusBaseUrl,
+      dataType: 'json',
+      success: function(data) {
+        var state = this.state;
+        state.platypusData = data;
+        this.setState(state);
+      }.bind(this),
+      error: function(xhr, status) {
+        console.log(xhr, status);
+      }
+    });
+  },
   render: function() {
     return (
       <main>
-        <PlatypusForm onNewPlatypusSubmit={this.onNewPlatypus} />
+        <PlatypusForm onNewPlatypusSubmit={this.onNewPlatypus} url={this.props.platypusBaseUrl}/>
         <PlatypusList data={this.state.platypusData} />
       </main>
     )
   }
 });
 
-React.render(<PlatypusApp />, document.body);
+React.render(<PlatypusApp platypusBaseUrl={'/api/v1/platypus'}/>, document.body);
